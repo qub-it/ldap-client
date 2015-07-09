@@ -58,7 +58,7 @@ public class QueryReplyElement {
     public boolean isWithAllAttributesFilled() {
         Set<String> keySet = this.responseMap.keySet();
         if (keySet.size() == this.replyAttributes.length) {
-            keySet.removeAll(Arrays.asList(this.replyAttributes));
+            new HashSet<String>(keySet).removeAll(Arrays.asList(this.replyAttributes));
             return keySet.size() == 0;
         }
         return false;
