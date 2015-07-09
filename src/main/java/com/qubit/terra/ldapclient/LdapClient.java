@@ -26,9 +26,9 @@
  */
 package com.qubit.terra.ldapclient;
 
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -95,19 +95,45 @@ public class LdapClient {
         this.context = null;
     }
 
-    public boolean login() {
+    private InitialDirContext getContext(String username, String password) {
         Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, this.url);
-        env.put(Context.SECURITY_PRINCIPAL, this.username);
-        env.put(Context.SECURITY_CREDENTIALS, this.password);
+        env.put(Context.SECURITY_PRINCIPAL, username);
+        env.put(Context.SECURITY_CREDENTIALS, password);
         env.put(Context.REFERRAL, "follow");
 
         try {
-            this.context = new InitialDirContext(env);
-            return true;
+            InitialDirContext initialDirContext = new InitialDirContext(env);
+            return initialDirContext;
         } catch (NamingException e) {
-            return false;
+            return null;
+        }
+
+    }
+
+    public boolean login() {
+        this.context = getContext(this.username, this.password);
+        return this.context != null;
+    }
+
+    public boolean verifyCredentials(String username, String password) {
+        try {
+            InitialDirContext context = null;
+            if (username.startsWith("cn=")) {
+                getContext(username, password);
+            } else {
+                context = getContext("cn=" + username + "," + this.baseDomainName, password);
+            }
+            return context != null;
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -175,6 +201,10 @@ public class LdapClient {
 
     }
 
+    public void deleteContext(String contextId) {
+        performWrite(contextId, Collections.EMPTY_LIST, new AttributesMap(), deleteExecutor);
+    }
+
     private static interface Executor {
         public void execute(DirContext dirContext, String contextId, Attributes attributes);
     }
@@ -237,7 +267,17 @@ public class LdapClient {
                 throw new RuntimeException("problems creating entry: " + contextId);
             }
         }
+    };
 
+    private Executor deleteExecutor = new Executor() {
+
+        public void execute(DirContext dirContext, String contextId, Attributes attributes) {
+            try {
+                dirContext.destroySubcontext(contextId);
+            } catch (NamingException e) {
+                throw new RuntimeException("problems deleting entry: " + contextId);
+            }
+        }
     };
 
 }
