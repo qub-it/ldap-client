@@ -36,39 +36,39 @@ public class QueryReply {
     private QueryReplyElement currentElement = null;
 
     public QueryReply(String[] replyAttributes) {
-	this.elements = new ArrayList<QueryReplyElement>();
-	this.replyAttributes = replyAttributes;
+        this.elements = new ArrayList<QueryReplyElement>();
+        this.replyAttributes = replyAttributes;
     }
 
     void addAttribute(String id, String value) {
-	currentElement.addAttribute(id, value);
+        currentElement.addAttribute(new String(id), new String(value));
     }
 
     public void createNewElement() {
-	this.currentElement = new QueryReplyElement(replyAttributes);
-	this.elements.add(this.currentElement);
+        this.currentElement = new QueryReplyElement(replyAttributes);
+        this.elements.add(this.currentElement);
     }
 
     public int getNumberOfResults() {
-	return this.elements.size();
+        return this.elements.size();
     }
 
     public List<QueryReplyElement> getResults() {
-	return this.elements;
+        return this.elements;
     }
 
     @Override
     public String toString() {
-	StringBuilder builder = new StringBuilder("Number of results: ");
-	builder.append(this.elements.size());
-	builder.append("\n");
-	int i = 0;
-	for (QueryReplyElement element : this.elements) {
-	    builder.append(i);
-	    builder.append(":\n");
-	    builder.append(element.toString());
-	    builder.append("\n");
-	}
-	return builder.toString();
+        StringBuilder builder = new StringBuilder("Number of results: ");
+        builder.append(this.elements.size());
+        builder.append("\n");
+        int i = 0;
+        for (QueryReplyElement element : this.elements) {
+            builder.append(i);
+            builder.append(":\n");
+            builder.append(element.toString());
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }

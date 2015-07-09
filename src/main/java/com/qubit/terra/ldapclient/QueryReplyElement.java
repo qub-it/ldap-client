@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,65 +42,65 @@ public class QueryReplyElement {
     private final String[] replyAttributes;
 
     QueryReplyElement(String[] replyAttributes) {
-	this.responseMap = new HashMap<String, List<String>>();
-	this.replyAttributes = replyAttributes;
+        this.responseMap = new HashMap<String, List<String>>();
+        this.replyAttributes = replyAttributes;
     }
 
     void addAttribute(String id, String value) {
-	List<String> list = this.responseMap.get(id);
-	if (list == null) {
-	    list = new ArrayList<String>();
-	    this.responseMap.put(id, list);
-	}
-	list.add(value);
+        List<String> list = this.responseMap.get(id);
+        if (list == null) {
+            list = new ArrayList<String>();
+            this.responseMap.put(id, list);
+        }
+        list.add(value);
     }
 
     public boolean isWithAllAttributesFilled() {
-	Set<String> keySet = this.responseMap.keySet();
-	if (keySet.size() == this.replyAttributes.length) {
-	    keySet.removeAll(Arrays.asList(this.replyAttributes));
-	    return keySet.size() == 0;
-	}
-	return false;
+        Set<String> keySet = this.responseMap.keySet();
+        if (keySet.size() == this.replyAttributes.length) {
+            keySet.removeAll(Arrays.asList(this.replyAttributes));
+            return keySet.size() == 0;
+        }
+        return false;
     }
 
     public boolean isAttributePresent(String id) {
-	return this.responseMap.get(id) != null;
+        return this.responseMap.get(id) != null;
     }
 
     public List<String> getListAttribute(String id) {
-	List<String> list = this.responseMap.get(id);
-	return list == null ? Collections.EMPTY_LIST : list;
+        List<String> list = this.responseMap.get(id);
+        return list == null ? Collections.EMPTY_LIST : list;
     }
 
     public String getSimpleAttribute(String id) {
-	List<String> list = this.responseMap.get(id);
-	if (list == null) {
-	    return EMPTY;
-	}
-	if (list.size() > 1) {
-	    throw new RuntimeException("Attribute with id: " + id + " is not a simple attribute since there are " + list.size()
-		    + " values for it. Use getListAttribute instead!");
-	}
-	return list.isEmpty() ? EMPTY : list.get(0);
+        List<String> list = this.responseMap.get(id);
+        if (list == null) {
+            return EMPTY;
+        }
+        if (list.size() > 1) {
+            throw new RuntimeException("Attribute with id: " + id + " is not a simple attribute since there are " + list.size()
+                    + " values for it. Use getListAttribute instead!");
+        }
+        return list.isEmpty() ? EMPTY : list.get(0);
     }
 
     @Override
     public String toString() {
-	StringBuilder builder = new StringBuilder("Requested attributes: ");
-	builder.append(replyAttributes);
-	builder.append("\n");
-	builder.append("WithAllAttributesFilled: ");
-	builder.append(isWithAllAttributesFilled());
-	builder.append("\n");
-	builder.append("Present attributes: ");
-	Set<Entry<String, List<String>>> entrySet = this.responseMap.entrySet();
-	for (Entry<String, List<String>> entry : entrySet) {
-	    builder.append(entry.getKey());
-	    builder.append(": ");
-	    builder.append(entry.getValue());
-	    builder.append("\n");
-	}
-	return builder.toString();
+        StringBuilder builder = new StringBuilder("Requested attributes: ");
+        builder.append(replyAttributes);
+        builder.append("\n");
+        builder.append("WithAllAttributesFilled: ");
+        builder.append(isWithAllAttributesFilled());
+        builder.append("\n");
+        builder.append("Present attributes: ");
+        Set<Entry<String, List<String>>> entrySet = this.responseMap.entrySet();
+        for (Entry<String, List<String>> entry : entrySet) {
+            builder.append(entry.getKey());
+            builder.append(": ");
+            builder.append(entry.getValue());
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }
