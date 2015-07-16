@@ -238,7 +238,7 @@ public class LdapClient {
             try {
                 dirContext.modifyAttributes(contextId, DirContext.ADD_ATTRIBUTE, attributes);
             } catch (NamingException e) {
-                throw new RuntimeException("problems while adding info to entry: " + contextId);
+                throw new RuntimeException("problems while adding info to entry: " + contextId, e);
             }
 
         }
@@ -251,7 +251,7 @@ public class LdapClient {
             try {
                 dirContext.modifyAttributes(contextId, DirContext.REPLACE_ATTRIBUTE, attributes);
             } catch (NamingException e) {
-                throw new RuntimeException("problems while replacing information in entry: " + contextId);
+                throw new RuntimeException("problems while replacing information in entry: " + contextId, e);
             }
 
         }
@@ -264,7 +264,7 @@ public class LdapClient {
             try {
                 dirContext.createSubcontext(contextId, attributes);
             } catch (NamingException e) {
-                throw new RuntimeException("problems creating entry: " + contextId);
+                throw new RuntimeException("problems creating entry: " + contextId, e);
             }
         }
     };
@@ -275,7 +275,7 @@ public class LdapClient {
             try {
                 dirContext.destroySubcontext(contextId);
             } catch (NamingException e) {
-                throw new RuntimeException("problems deleting entry: " + contextId);
+                throw new RuntimeException("problems deleting entry: " + contextId, e);
             }
         }
     };
