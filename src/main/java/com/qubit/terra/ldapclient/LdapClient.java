@@ -102,6 +102,7 @@ public class LdapClient {
         env.put(Context.SECURITY_PRINCIPAL, username);
         env.put(Context.SECURITY_CREDENTIALS, password);
         env.put(Context.REFERRAL, "follow");
+        env.put("com.sun.jndi.ldap.read.timeout", "5000");
 
         try {
             InitialDirContext initialDirContext = new InitialDirContext(env);
