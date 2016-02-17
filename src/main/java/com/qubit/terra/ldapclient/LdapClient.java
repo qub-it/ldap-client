@@ -95,10 +95,18 @@ public class LdapClient {
         this.context = null;
     }
 
+    public boolean isSecure() {
+        return this.url != null && this.url.startsWith("ldaps:");
+    }
+
     private InitialDirContext getContext(String username, String password) {
         Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, this.url);
+        if (isSecure()) {
+            env.put(Context.SECURITY_PROTOCOL, "ssl");
+            env.put("java.naming.ldap.factory.socket", "com.qubit.terra.ldapclient.LdapSocketFactory");
+        }
         env.put(Context.SECURITY_PRINCIPAL, username);
         env.put(Context.SECURITY_CREDENTIALS, password);
         env.put(Context.REFERRAL, "follow");
