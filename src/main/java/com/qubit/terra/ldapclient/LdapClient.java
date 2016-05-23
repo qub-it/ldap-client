@@ -200,9 +200,11 @@ public class LdapClient {
     }
 
     public void replaceInExistingContext(String contextId, List<String> objectClasses, AttributesMap attributesMap) {
-
         performWrite(contextId, objectClasses, attributesMap, replaceExecutor);
+    }
 
+    public void removeFromExistingContext(String contextId, AttributesMap attributesMap) {
+        performWrite(contextId, Collections.EMPTY_LIST, attributesMap, deleteAttributeExecutor);
     }
 
     public void writeNewContext(String contextId, List<String> objectClasses, AttributesMap attributesMap) {
@@ -242,7 +244,9 @@ public class LdapClient {
         for (Entry<String, List<String>> entry : entrySet) {
             Attribute attribute = new BasicAttribute(entry.getKey());
             for (String value : entry.getValue()) {
-                attribute.add(value);
+                if (value != null) {
+                    attribute.add(value);
+                }
             }
             attributes.put(attribute);
         }
@@ -271,6 +275,19 @@ public class LdapClient {
                 dirContext.modifyAttributes(contextId, DirContext.REPLACE_ATTRIBUTE, attributes);
             } catch (NamingException e) {
                 throw new RuntimeException("problems while replacing information in entry: " + contextId, e);
+            }
+
+        }
+
+    };
+
+    private Executor deleteAttributeExecutor = new Executor() {
+
+        public void execute(DirContext dirContext, String contextId, Attributes attributes) {
+            try {
+                dirContext.modifyAttributes(contextId, DirContext.REMOVE_ATTRIBUTE, attributes);
+            } catch (NamingException e) {
+                throw new RuntimeException("problems while deleting information in entry: " + contextId, e);
             }
 
         }
