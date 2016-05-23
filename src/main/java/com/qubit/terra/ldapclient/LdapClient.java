@@ -207,7 +207,17 @@ public class LdapClient {
 
     public void writeNewContext(String contextId, List<String> objectClasses, AttributesMap attributesMap) {
         performWrite(contextId, objectClasses, attributesMap, createExecutor);
+    }
 
+    public boolean renameContext(String oldContextId, String newContextId) {
+        boolean renamedWorked = false;
+        try {
+            this.context.rename(oldContextId, newContextId);
+            renamedWorked = true;
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+        return renamedWorked;
     }
 
     public void deleteContext(String contextId) {
